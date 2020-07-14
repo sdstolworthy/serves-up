@@ -7,19 +7,19 @@ ServesUp is a simple application for quickly mocking an API by parsing a simple 
 ServesUp requires the server definition to be passed in as the first positional argument to the command. For example:
 
 ```bash
-npx servesup ./my-server-definition.json
+npx serves-up ./my-server-definition.json
 ```
 
 Optionally, you can pass a port parameter that will override the port defined in the server definition:
 
 ```bash
-npx servesup ./my-server-definition.json -p 3001
+npx serves-up ./my-server-definition.json -p 3001
 ```
 
 Additionally, you can forego writing a schema definition file altogether and instead use a oneliner to listen to a single route:
 
 ```bash
-npx servesup route  "/*" --statusCode 200 --method get --method post --fixture "{\"hello\":\"world\"}" -p 3001
+npx serves-up route  "/*" --statusCode 200 --method get --method post --fixture "{\"hello\":\"world\"}" -p 3001
 ```
 
 ## Server Definition File
@@ -139,11 +139,11 @@ For example, the above definition with a custom header for the wildcard route wo
 If you're into one-liners, we've got you covered. You can run a single route definition with a single line command:
 
 ```bash
-servesup route  "/*" --statusCode 200 --method get --method post --fixture "{\"hello\":\"world\"}"
+serves-up route  "/*" --statusCode 200 --method get --method post --fixture "{\"hello\":\"world\"}"
 ```
 
 or, if typing words isn't your thing:
 
 ```bash
-servesup route "/*" -c 200 -m get -m post -f "{\"hello\":\"world\"}"
+serves-up route "/*" -c 200 -m get -m post -f "{\"hello\":\"world\"}"
 ```
