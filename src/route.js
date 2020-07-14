@@ -1,34 +1,37 @@
 export function addRouteToApp(app, route, handleFixtureLoad) {
-  const requestHandler = createRequestHandler(route, handleFixtureLoad);
+  const requestHandler = createRequestHandler(route, { handleFixtureLoad });
   if (!("path" in route)) {
     throw Error("`path` is a required key in every route");
   }
-  if (route && route.methods && !Array.isArray(route.methods)) {
+  if (!!route && !!route.methods && !Array.isArray(route.methods)) {
     throw Error(
       "A route's methods must be a list of HTTP methods or undefined"
     );
   }
-  if (!route.methods.length) {
+  if (!route.methods || !route.methods.length) {
     app.all(route.path, requestHandler);
-  }
-  for (let method of route.methods) {
-    if (typeof method !== "string") {
-      throw Error(`invalid method specified: ${JSON.stringify(method)}`);
-    }
-    let cleanedMethod = method.toLowerCase().trim();
-    if (validateHttpMethod(cleanedMethod)) {
-      app[cleanedMethod](route.path, requestHandler);
+  } else {
+    for (let method of route.methods) {
+      if (typeof method !== "string") {
+        throw Error(`invalid method specified: ${JSON.stringify(method)}`);
+      }
+      let cleanedMethod = method.toLowerCase().trim();
+      if (validateHttpMethod(cleanedMethod)) {
+        app[cleanedMethod](route.path, requestHandler);
+      }
     }
   }
   return app;
 }
 
-function createRequestHandler(route, handleFixtureLoad) {
+function createRequestHandler(route, { handleFixtureLoad }) {
   if (route.statusCode && typeof route.statusCode !== "number") {
     throw Error(`Status code must be a number: ${route.path}`);
   }
+  const responseHeaders = !!route.headers ? route.headers : {};
   return (request, response) => {
     response
+      .set(responseHeaders)
       .status(typeof route.statusCode === "number" ? route.statusCode : 200)
       .json(createFixture(route.fixture, handleFixtureLoad));
   };

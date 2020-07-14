@@ -10,8 +10,15 @@
     {
       "path": "/app",
       "statusCode": 200,
-      "fixture": { "spencer": "stolworthy" },
+      "fixture": { "john": "doe" },
       "methods": ["delete", "head"]
+    },
+    {
+      "path": "*",
+      "statusCode": 301,
+      "headers": {
+        "X-My-Custom-Header": "custom header"
+      }
     }
   ]
 }

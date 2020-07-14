@@ -3,10 +3,11 @@ import chalk from "chalk";
 import { addRouteToApp } from "./route";
 import { loadFile, checkIfFileExists } from "./files";
 import path from "path";
+const cors = require("cors");
 
 const morgan = require("morgan");
 
-export function runServer(filePath) {
+export function runServer(filePath, { port: portArgument } = {}) {
   const serverDefinition = parseServerDefinitionFile(loadFile(filePath));
   const isValidDefinition = validateServerDefinition(serverDefinition);
   if (!isValidDefinition) {
@@ -14,12 +15,14 @@ export function runServer(filePath) {
   }
   let app = Express();
   app.use(morgan("combined"));
-  const { port = 3000, routes = {} } = serverDefinition;
+  app.use(cors());
+  const { port: schemaPort = 3000, routes = {} } = serverDefinition;
   for (let route of routes) {
     app = addRouteToApp(app, route, loadFixture(filePath));
   }
-  console.info(chalk.green(`🚀 Server is listening on port ${port}`));
-  app.listen(port);
+  const listenPort = portArgument ? portArgument : schemaPort;
+  console.info(chalk.green(`🚀 Server is listening on port ${listenPort}`));
+  app.listen(listenPort);
 }
 
 function validateServerDefinition(serverDefinition) {
