@@ -16,7 +16,7 @@ Optionally, you can pass a port parameter that will override the port defined in
 npx serves-up ./my-server-definition.json -p 3001
 ```
 
-Additionally, you can forego writing a schema definition file altogether and instead use a oneliner to listen to a single route:
+Alternatively, you can forego writing a schema definition file altogether and instead use the `route` command to build a one-liner to listen to a single route:
 
 ```bash
 npx serves-up route  "/*" --statusCode 200 --method get --method post --fixture "{\"hello\":\"world\"}" --headers '{"X-Custom-Header":"custom header"}'
