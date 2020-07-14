@@ -16,6 +16,12 @@ Optionally, you can pass a port parameter that will override the port defined in
 npx servesup ./my-server-definition.json -p 3001
 ```
 
+Additionally, you can forego writing a schema definition file altogether and instead use a oneliner to listen to a single route:
+
+```bash
+servesup route  "/*" --statusCode 200 --method get --method post --fixture "{\"hello\":\"world\"}" -p 3001
+```
+
 ## Server Definition File
 
 The server definition file is a simple JSON file that defines the server's configuration and routes.
