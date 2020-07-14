@@ -35,7 +35,10 @@ function createDefinitionFromArguments({
     routes: [
       {
         path: routePath,
-        methods: method.map((m) => m.toLowerCase()),
+        methods:
+          !!method && Array.isArray(method)
+            ? method.map((m) => m.toLowerCase())
+            : undefined,
         statusCode,
         fixture: response,
       },
