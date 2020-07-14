@@ -1,10 +1,10 @@
-# 🏄🏼‍♂️ ServesUp 🏄🏻‍♂️
+# 🏄🏼‍♂️ Serves Up 🏄🏻‍♂️
 
-ServesUp is a simple application for quickly mocking an API by parsing a simple JSON file and responding to requests on a specified port. ⛱️
+Serves Up is a simple application for quickly mocking an API by parsing a simple JSON file and responding to requests on a specified port. ⛱️
 
 ## Usage 🦈
 
-ServesUp requires the server definition to be passed in as the first positional argument to the command. For example:
+Serves Up requires the server definition to be passed in as the first positional argument to the command. For example:
 
 ```bash
 npx serves-up ./my-server-definition.json
@@ -19,7 +19,7 @@ npx serves-up ./my-server-definition.json -p 3001
 Alternatively, you can forego writing a schema definition file altogether and instead use the `route` command to build a one-liner to listen to a single route:
 
 ```bash
-npx serves-up route  "/*" --statusCode 200 --method get --method post --fixture "{\"hello\":\"world\"}" --headers '{"X-Custom-Header":"custom header"}'
+npx serves-up route  "/*" --statusCode 200 --method get --method post --fixture '{"hello":"world"}' --headers '{"X-Custom-Header":"custom header"}'
 ```
 
 ## Server Definition File 🎣
@@ -139,11 +139,11 @@ For example, the above definition with a custom header for the wildcard route wo
 If you're into one-liners, we've got you covered. You can run a single route definition with a single line command:
 
 ```bash
-serves-up route  "/*" --statusCode 200 --method get --method post --fixture "{\"hello\":\"world\"}" --headers '{"X-Custom-Header":"custom header"}'
+npx serves-up route  "/*" --statusCode 200 --method get --method post --fixture '{"hello":"world"}' --headers '{"X-Custom-Header":"custom header"}' --port 3001
 ```
 
 or, if typing words isn't your thing:
 
 ```bash
-npx serves-up route  "/*" --statusCode 302 --method get --fixture "{\"spencer\":\"stolworthy\"}" -p 2000 -d '{"X-Custom-Header":"custom header"}'
+npx serves-up route  "/*" -c 200 -m get -m post --fixture '{"hello":"world"}' -d '{"X-Custom-Header":"custom header"}' -p 3001
 ```
