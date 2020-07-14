@@ -1,28 +1,92 @@
 import Express from "express";
 import chalk from "chalk";
 import { addRouteToApp } from "./route";
-import { loadFile, checkIfFileExists } from "./files";
+import { loadFile, checkIfFileExists, getTruePath } from "./files";
 import path from "path";
 const cors = require("cors");
 
 const morgan = require("morgan");
 
-export function runServer(filePath, { port: portArgument } = {}) {
-  const serverDefinition = parseServerDefinitionFile(loadFile(filePath));
+function createDefinitionFromFile({ inputFile }) {
+  const filePath = getTruePath(inputFile);
+  if (!checkIfFileExists(filePath)) {
+    throw Error("The server definition file does not exist");
+  }
+  return parseServerDefinitionFile(loadFile(filePath));
+}
+
+function createDefinitionFromArguments({
+  routePath,
+  port,
+  method,
+  fixture,
+  statusCode,
+}) {
+  let response;
+  try {
+    if (typeof fixture === "string") {
+      response = JSON.parse(fixture);
+    }
+  } catch (e) {
+    throw new Error("fixture must be a stringified JSON object or undefined");
+  }
+  return {
+    port,
+    routes: [
+      {
+        path: routePath,
+        methods: method.map((m) => m.toLowerCase()),
+        statusCode,
+        fixture: response,
+      },
+    ],
+  };
+}
+
+function createDefinition({
+  inputFile,
+  routePath,
+  method,
+  fixture,
+  port,
+  statusCode,
+}) {
+  let serverDefinition;
+  if (!!routePath) {
+    serverDefinition = createDefinitionFromArguments({
+      routePath,
+      method,
+      fixture,
+      port,
+      statusCode,
+    });
+  } else if (!!inputFile) {
+    serverDefinition = createDefinitionFromFile(inputFile);
+  } else {
+    throw Error("Either route path or input file must be specified");
+  }
+
   const isValidDefinition = validateServerDefinition(serverDefinition);
   if (!isValidDefinition) {
     throw Error("The server definition is not valid");
   }
+  return serverDefinition;
+}
+
+export function runServer(serverOptions) {
+  const serverDefinition = createDefinition(serverOptions);
   let app = Express();
   app.use(morgan("combined"));
   app.use(cors());
   const { port: schemaPort = 3000, routes = {} } = serverDefinition;
+  const filePath = !!serverOptions.inputFile
+    ? getTruePath(serverOptions.inputFile)
+    : process.cwd();
   for (let route of routes) {
     app = addRouteToApp(app, route, loadFixture(filePath));
   }
-  const listenPort = portArgument ? portArgument : schemaPort;
-  console.info(chalk.green(`🚀 Server is listening on port ${listenPort}`));
-  app.listen(listenPort);
+  console.info(chalk.green(`🚀 Server is listening on port ${schemaPort}`));
+  app.listen(schemaPort);
 }
 
 function validateServerDefinition(serverDefinition) {

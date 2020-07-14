@@ -127,3 +127,17 @@ For example, the above definition with a custom header for the wildcard route wo
   ]
 }
 ```
+
+### One and Done
+
+If you're into one-liners, we've got you covered. You can run a single route definition with a single line command:
+
+```bash
+servesup route  "/*" --statusCode 200 --method get --method post --fixture "{\"hello\":\"world\"}"
+```
+
+or, if typing words isn't your thing:
+
+```bash
+servesup route "/*" -c 200 -m get -m post -f "{\"hello\":\"world\"}"
+```
