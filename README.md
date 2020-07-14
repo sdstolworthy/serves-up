@@ -1,4 +1,4 @@
-# 🏄🏼‍♂️ Serves Up 🏄🏻‍♂️
+# 🏄🏼‍♂️ Serves Up 🏄🏿‍♂️
 
 Serves Up is a simple application for quickly mocking an API by parsing a simple JSON file and responding to requests on a specified port. ⛱️
 
@@ -39,7 +39,9 @@ A minimal server config would look like this:
 }
 ```
 
-This would return a `200` response on all routes with a simple json payload of `{"hello":"world"}`.
+_Note that `port` is an optional field. It defaults to `3000`_
+
+This would return a `200` response on all routes with an empty json object: `{}`.
 
 ### Customizing Routes 🏝️
 
@@ -145,5 +147,5 @@ npx serves-up route  "/*" --statusCode 200 --method get --method post --fixture 
 or, if typing words isn't your thing:
 
 ```bash
-npx serves-up route  "/*" -c 200 -m get -m post --fixture '{"hello":"world"}' -d '{"X-Custom-Header":"custom header"}' -p 3001
+npx serves-up route  "/*" -c 200 -m get -m post -f '{"hello":"world"}' -d '{"X-Custom-Header":"custom header"}' -p 3001
 ```

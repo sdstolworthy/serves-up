@@ -43,7 +43,7 @@ function createFixture(fixture, handleFixtureLoad) {
   } else if (typeof fixture === "string") {
     return handleFixtureLoad(fixture);
   } else {
-    return { hello: "world" };
+    return {};
   }
 }
 

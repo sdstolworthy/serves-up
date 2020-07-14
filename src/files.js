@@ -16,3 +16,12 @@ export function checkIfFileExists(inputPath) {
   const fs = require("fs");
   return typeof inputPath === "string" && fs.existsSync(inputPath);
 }
+
+export function isValidJson(input) {
+  try {
+    JSON.parse(input);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
