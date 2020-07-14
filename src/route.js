@@ -1,15 +1,15 @@
-const express = require("express");
-import { checkIfFileExists, getTruePath, loadFile } from "./files";
-export function createRoute(route) {
-  const router = express.Router();
-  const requestHandler = createRequestHandler(route);
+export function addRouteToApp(app, route, handleFixtureLoad) {
+  const requestHandler = createRequestHandler(route, handleFixtureLoad);
+  if (!("path" in route)) {
+    throw Error("`path` is a required key in every route");
+  }
   if (route && route.methods && !Array.isArray(route.methods)) {
     throw Error(
       "A route's methods must be a list of HTTP methods or undefined"
     );
   }
   if (!route.methods.length) {
-    router.all("/", requestHandler);
+    app.all(route.path, requestHandler);
   }
   for (let method of route.methods) {
     if (typeof method !== "string") {
@@ -17,39 +17,29 @@ export function createRoute(route) {
     }
     let cleanedMethod = method.toLowerCase().trim();
     if (validateHttpMethod(cleanedMethod)) {
-      router[cleanedMethod]("/", requestHandler);
+      app[cleanedMethod](route.path, requestHandler);
     }
   }
-  return router;
+  return app;
 }
 
-function loadFixture(fixturePath) {
-  try {
-    const truePath = getTruePath(fixturePath);
-    if (checkIfFileExists(truePath)) {
-      const fixtureBuffer = loadFile(truePath);
-      try {
-        return JSON.parse(fixtureBuffer);
-      } catch (e) {
-        throw Error("Fixture could not be parsed to JSON");
-      }
-    } else {
-      throw Error(`Fixture does not exist at path ${fixturePath}`);
-    }
-  } catch (e) {
-    throw Error(`There was an error while loading a fixture: ${fixturePath}`);
-  }
-}
-
-function createRequestHandler(route) {
+function createRequestHandler(route, handleFixtureLoad) {
+  console.log(route);
   return (request, response) => {
-    if ("fixture" in route) {
-      const fixtureJson = loadFixture(route.fixture);
-      response.json(fixtureJson);
-    } else {
-      response.json({ fixture: "false" });
-    }
+    response
+      .status(typeof route.statusCode === "number" ? route.statusCode : 200)
+      .json(createFixture(route.fixture, handleFixtureLoad));
   };
+}
+
+function createFixture(fixture, handleFixtureLoad) {
+  if (typeof fixture === "object") {
+    return fixture;
+  } else if (typeof fixture === "string") {
+    return handleFixtureLoad(fixture);
+  } else {
+    return { hello: "world" };
+  }
 }
 
 function validateHttpMethod(method) {
