@@ -16,11 +16,13 @@ function initializeApp() {
 }
 
 function parseArguments() {
-  const options = yargs.option("input", {
-    alias: "i",
-    describe: "file to parse for the server",
-    type: "string",
-  }).argv;
+  const options = yargs
+    .option("input", {
+      alias: "i",
+      describe: "schema definition file",
+      type: "string",
+    })
+    .help("h").argv;
   return {
     inputFile: options.input,
   };

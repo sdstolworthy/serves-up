@@ -3,7 +3,7 @@ import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
 import { terser } from "rollup-plugin-terser";
 export default {
-  plugins: [nodeResolve(), commonjs(), json()],
+  plugins: [nodeResolve(), commonjs(), json(), terser()],
   input: "src/index.js",
   output: {
     file: "dist/servesup.js",
