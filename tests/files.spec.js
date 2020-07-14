@@ -17,4 +17,9 @@ describe("Files", () => {
       files.getTruePath(path.join("tests/", TEST_FILE_PATH))
     );
   });
+  it("loadFile should read file and return buffer", () => {
+    expect(JSON.parse(files.loadFile(QUALIFIED_FILE_PATH))).equals({
+      hello: "world",
+    });
+  });
 });
