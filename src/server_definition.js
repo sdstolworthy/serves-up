@@ -19,16 +19,25 @@ function createDefinitionFromArguments({
   routePath,
   port,
   method,
-  fixture,
+  fixture: unparsedFixture,
+  headers: unparsedHeaders,
   statusCode,
 }) {
-  let response;
+  let fixture;
   try {
-    if (typeof fixture === "string") {
-      response = JSON.parse(fixture);
+    if (typeof unparsedFixture === "string") {
+      fixture = JSON.parse(unparsedFixture);
     }
   } catch (e) {
     throw new Error("fixture must be a stringified JSON object or undefined");
+  }
+  let headers;
+  try {
+    if (typeof unparsedHeaders === "string") {
+      headers = JSON.parse(unparsedHeaders);
+    }
+  } catch (e) {
+    throw new Error("Headers must be a stringified JSON object or undefined");
   }
   return {
     port,
@@ -40,7 +49,8 @@ function createDefinitionFromArguments({
             ? method.map((m) => m.toLowerCase())
             : undefined,
         statusCode,
-        fixture: response,
+        fixture,
+        headers,
       },
     ],
   };
@@ -52,6 +62,7 @@ function createDefinition({
   method,
   fixture,
   port,
+  headers,
   statusCode,
 }) {
   let serverDefinition;
@@ -60,6 +71,7 @@ function createDefinition({
       routePath,
       method,
       fixture,
+      headers,
       port,
       statusCode,
     });

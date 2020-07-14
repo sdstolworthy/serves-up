@@ -19,7 +19,7 @@ npx serves-up ./my-server-definition.json -p 3001
 Additionally, you can forego writing a schema definition file altogether and instead use a oneliner to listen to a single route:
 
 ```bash
-npx serves-up route  "/*" --statusCode 200 --method get --method post --fixture "{\"hello\":\"world\"}" -p 3001
+npx serves-up route  "/*" --statusCode 200 --method get --method post --fixture "{\"hello\":\"world\"}" --headers '{"X-Custom-Header":"custom header"}'
 ```
 
 ## Server Definition File 🎣
@@ -139,11 +139,11 @@ For example, the above definition with a custom header for the wildcard route wo
 If you're into one-liners, we've got you covered. You can run a single route definition with a single line command:
 
 ```bash
-serves-up route  "/*" --statusCode 200 --method get --method post --fixture "{\"hello\":\"world\"}"
+serves-up route  "/*" --statusCode 200 --method get --method post --fixture "{\"hello\":\"world\"}" --headers '{"X-Custom-Header":"custom header"}'
 ```
 
 or, if typing words isn't your thing:
 
 ```bash
-serves-up route "/*" -c 200 -m get -m post -f "{\"hello\":\"world\"}"
+npx serves-up route  "/*" --statusCode 302 --method get --fixture "{\"spencer\":\"stolworthy\"}" -p 2000 -d '{"X-Custom-Header":"custom header"}'
 ```

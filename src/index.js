@@ -19,6 +19,7 @@ function parseArguments() {
     statusCode,
     definition_file,
     port,
+    headers,
   } = yargs
     .command("$0 <definition_file> [options]", "", (yargs) =>
       yargs.positional("definition_file", {
@@ -51,6 +52,11 @@ function parseArguments() {
           description:
             'A stringified JSON object that will be sent as the response payload, e.g. "{"hello":"world"}"',
         })
+        .option("headers", {
+          type: "string",
+          alias: "d",
+          description: "Custom headers to be returned in the response",
+        })
         .help("h")
     )
     .option("port", {
@@ -63,6 +69,7 @@ function parseArguments() {
   return {
     inputFile: definition_file,
     port,
+    headers,
     routePath,
     method,
     fixture,
