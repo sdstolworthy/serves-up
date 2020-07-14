@@ -38,6 +38,7 @@
     "quick",
     "server",
     "mock",
-    "api"
+    "api",
+    "testing"
   ]
 }
