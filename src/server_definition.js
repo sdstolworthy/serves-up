@@ -3,6 +3,9 @@ import chalk from "chalk";
 import { addRouteToApp } from "./route";
 import { loadFile, checkIfFileExists } from "./files";
 import path from "path";
+
+const morgan = require("morgan");
+
 export function runServer(filePath) {
   const serverDefinition = parseServerDefinitionFile(loadFile(filePath));
   const isValidDefinition = validateServerDefinition(serverDefinition);
@@ -10,6 +13,7 @@ export function runServer(filePath) {
     throw Error("The server definition is not valid");
   }
   let app = Express();
+  app.use(morgan("combined"));
   const { port = 3000, routes = {} } = serverDefinition;
   for (let route of routes) {
     app = addRouteToApp(app, route, loadFixture(filePath));

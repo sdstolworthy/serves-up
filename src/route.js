@@ -24,7 +24,9 @@ export function addRouteToApp(app, route, handleFixtureLoad) {
 }
 
 function createRequestHandler(route, handleFixtureLoad) {
-  console.log(route);
+  if (route.statusCode && typeof route.statusCode !== "number") {
+    throw Error(`Status code must be a number: ${route.path}`);
+  }
   return (request, response) => {
     response
       .status(typeof route.statusCode === "number" ? route.statusCode : 200)
