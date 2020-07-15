@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+
 export function getTruePath(input) {
   if (path.isAbsolute(input)) {
     return input;

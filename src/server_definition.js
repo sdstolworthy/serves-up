@@ -1,16 +1,18 @@
 import Express from "express";
 import chalk from "chalk";
 import { addRouteToApp } from "./route";
-import { loadFile, checkIfFileExists, getTruePath } from "./files";
+import { loadFile, checkIfFileExists, getTruePath, isValidJson } from "./files";
 import path from "path";
 const cors = require("cors");
 
 const morgan = require("morgan");
+let app = Express();
+let server;
 
 function createDefinitionFromFile({ inputFile }) {
   const filePath = getTruePath(inputFile);
   if (!checkIfFileExists(filePath)) {
-    throw Error("The server definition file does not exist");
+    throw new Error("The server definition file does not exist");
   }
   return parseServerDefinitionFile(loadFile(filePath));
 }
@@ -24,21 +26,24 @@ function createDefinitionFromArguments({
   statusCode,
 }) {
   let fixture;
-  try {
-    if (typeof unparsedFixture === "string") {
-      fixture = JSON.parse(unparsedFixture);
-    }
-  } catch (e) {
+  if (typeof unparsedFixture === "object") {
+    fixture = unparsedFixture;
+  } else if (isValidJson(unparsedFixture)) {
+    fixture = JSON.parse(unparsedFixture);
+  } else if (!unparsedFixture) {
+  } else {
     throw new Error("fixture must be a stringified JSON object or undefined");
   }
   let headers;
-  try {
-    if (typeof unparsedHeaders === "string") {
-      headers = JSON.parse(unparsedHeaders);
-    }
-  } catch (e) {
-    throw new Error("Headers must be a stringified JSON object or undefined");
+  if (typeof unparsedHeaders === "object") {
+    headers = unparsedHeaders;
+  } else if (isValidJson(unparsedHeaders)) {
+    headers = JSON.parse(unparsedHeaders);
+  } else if (!unparsedHeaders) {
+  } else {
+    throw new Error("headers must be a stringified JSON object or undefined");
   }
+
   return {
     port,
     routes: [
@@ -56,7 +61,7 @@ function createDefinitionFromArguments({
   };
 }
 
-function createDefinition({
+export function createDefinition({
   inputFile,
   routePath,
   method,
@@ -76,21 +81,16 @@ function createDefinition({
       statusCode,
     });
   } else if (!!inputFile) {
-    serverDefinition = createDefinitionFromFile(inputFile);
+    serverDefinition = createDefinitionFromFile({ inputFile });
   } else {
     throw Error("Either route path or input file must be specified");
   }
 
-  const isValidDefinition = validateServerDefinition(serverDefinition);
-  if (!isValidDefinition) {
-    throw Error("The server definition is not valid");
-  }
   return serverDefinition;
 }
 
 export function runServer(serverOptions) {
   const serverDefinition = createDefinition(serverOptions);
-  let app = Express();
   app.use(morgan("combined"));
   app.use(cors());
   const { port: schemaPort = 3000, routes = {} } = serverDefinition;
@@ -101,12 +101,13 @@ export function runServer(serverOptions) {
     app = addRouteToApp(app, route, loadFixture(filePath));
   }
   console.info(chalk.green(`🚀 Server is listening on port ${schemaPort}`));
-  app.listen(schemaPort);
+  server = app.listen(schemaPort);
+  return app;
 }
 
-function validateServerDefinition(serverDefinition) {
-  if (!!serverDefinition) {
-    return true;
+export function close() {
+  if (!!server && typeof server.close === "function") {
+    server.close();
   }
 }
 
