@@ -10,7 +10,7 @@
   "scripts": {
     "build": "rollup -c rollup.config.js",
     "prepare": "npm run build",
-    "test": "nyc --reporter=text mocha tests/**/*.spec.js --exit"
+    "test": "nyc --reporter=lcov --reporter=text mocha tests/**/*.spec.js --exit"
   },
   "homepage": "https://github.com/sdstolworthy/serves-up",
   "author": "Spencer Stolworthy",
@@ -37,7 +37,9 @@
     "@rollup/plugin-node-resolve": "^8.4.0",
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
+    "coveralls": "^3.1.0",
     "mocha": "^8.0.1",
+    "mocha-lcov-reporter": "^1.3.0",
     "nyc": "^15.1.0",
     "rollup": "^2.21.0",
     "rollup-plugin-terser": "^6.1.0"
