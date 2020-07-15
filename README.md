@@ -1,4 +1,5 @@
 ![Test Status](https://github.com/sdstolworthy/serves-up/workflows/Test/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/sdstolworthy/serves-up/badge.svg?branch=master)](https://coveralls.io/github/sdstolworthy/serves-up?branch=master)
 
 # 🏄🏼‍♂️ Serves Up 🏄🏿‍♂️
 
