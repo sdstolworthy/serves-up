@@ -57,7 +57,8 @@ describe('RunServer tests', function() {
         expect(res).to.have.status(200);
         done();
       });
-  });  it('should load the correct fixture path', function(done) {
+  });
+  it('should load the correct fixture path', function(done) {
     expect(() =>
       chai
         .request(runServer({ inputFile: './tests/test_schema.json' }))
