@@ -121,7 +121,6 @@ function getFixturePath(fixturePath, serverDefinitionPath) {
 
 function loadFixture(serverDefinitionPath) {
   return function (fixturePath) {
-    console.log("lading fixture!!!");
     const truePath = getFixturePath(fixturePath, serverDefinitionPath);
     if (checkIfFileExists(truePath)) {
       const fixtureBuffer = loadFile(truePath);
