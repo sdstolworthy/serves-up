@@ -1,5 +1,7 @@
-import { runServer } from "./server_definition";
-import { parseArguments } from "./arguments";
+import { parseArguments } from './arguments';
+import { runServer } from './server';
+import process from 'process';
+
 function initializeApp() {
   try {
     const serverOptions = parseArguments();

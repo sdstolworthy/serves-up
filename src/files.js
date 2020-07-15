@@ -1,5 +1,6 @@
-const fs = require("fs");
-const path = require("path");
+import fs from 'fs';
+import path from 'path';
+import process from 'process';
 
 export function getTruePath(input) {
   if (path.isAbsolute(input)) {
@@ -14,8 +15,7 @@ export function loadFile(inputPath) {
 }
 
 export function checkIfFileExists(inputPath) {
-  const fs = require("fs");
-  return typeof inputPath === "string" && fs.existsSync(inputPath);
+  return typeof inputPath === 'string' && fs.existsSync(inputPath);
 }
 
 export function isValidJson(input) {

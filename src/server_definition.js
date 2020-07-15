@@ -1,44 +1,37 @@
-import Express from "express";
-import chalk from "chalk";
-import { addRouteToApp } from "./route";
-import { loadFile, checkIfFileExists, getTruePath, isValidJson } from "./files";
-import path from "path";
-const cors = require("cors");
-
-const morgan = require("morgan");
-let app = Express();
-let server;
+import { loadFile, checkIfFileExists, getTruePath, isValidJson } from './files';
+import path from 'path';
+import process from 'process';
 
 function createFixture(fixture, handleLoadFixture) {
-  if (typeof fixture === "object") {
+  if (typeof fixture === 'object') {
     return fixture;
   } else if (isValidJson(fixture)) {
     return JSON.parse(fixture);
   } else if (!fixture) {
     return undefined;
-  } else if (typeof fixture === "string") {
+  } else if (typeof fixture === 'string') {
     return handleLoadFixture(fixture);
   } else {
-    throw new Error("fixture must be a stringified JSON object or undefined");
+    throw new Error('fixture must be a stringified JSON object or undefined');
   }
 }
 
 function createHeaders(headers) {
-  if (typeof headers === "object") {
+  if (typeof headers === 'object') {
     return headers;
   } else if (isValidJson(headers)) {
     return JSON.parse(headers);
   } else if (!headers) {
     return undefined;
   } else {
-    throw new Error("headers must be a stringified JSON object or undefined");
+    throw new Error('headers must be a stringified JSON object or undefined');
   }
 }
 
 function createDefinitionFromFile({ inputFile }, handleLoadFixture) {
   const filePath = getTruePath(inputFile);
   if (!checkIfFileExists(filePath)) {
-    throw new Error("The server definition file does not exist");
+    throw new Error('The server definition file does not exist');
   }
   const parsedDefinition = parseServerDefinitionFile(loadFile(filePath));
   return {
@@ -92,7 +85,7 @@ export function createDefinition(
   handleLoadFixture
 ) {
   let serverDefinition;
-  if (!!routePath) {
+  if (routePath) {
     serverDefinition = createDefinitionFromArguments(
       {
         routePath,
@@ -104,41 +97,19 @@ export function createDefinition(
       },
       handleLoadFixture
     );
-  } else if (!!inputFile) {
+  } else if (inputFile) {
     serverDefinition = createDefinitionFromFile(
       { inputFile },
       handleLoadFixture
     );
   } else {
-    throw Error("Either route path or input file must be specified");
+    throw Error('Either route path or input file must be specified');
   }
 
   return serverDefinition;
 }
 export function getReferenceFilePath(inputFile) {
-  return !!inputFile ? getTruePath(inputFile) : process.cwd();
-}
-export function runServer(serverOptions) {
-  const serverDefinition = createDefinition(
-    serverOptions,
-    onLoadFixture(getReferenceFilePath(serverOptions.inputFile))
-  );
-  app.use(morgan("combined"));
-  app.use(cors());
-  const { port: schemaPort, routes } = serverDefinition;
-
-  for (let route of routes) {
-    app = addRouteToApp(app, route);
-  }
-  console.info(chalk.green(`🚀 Server is listening on port ${schemaPort}`));
-  server = app.listen(schemaPort);
-  return app;
-}
-
-export function close() {
-  if (!!server && typeof server.close === "function") {
-    server.close();
-  }
+  return inputFile ? getTruePath(inputFile) : process.cwd();
 }
 
 function getFixturePath(fixturePath, serverDefinitionPath) {
@@ -157,7 +128,7 @@ export function onLoadFixture(serverDefinitionPath) {
       try {
         return JSON.parse(fixtureBuffer);
       } catch (e) {
-        throw Error("Fixture could not be parsed to JSON");
+        throw Error('Fixture could not be parsed to JSON');
       }
     } else {
       throw Error(`Fixture does not exist at path ${fixturePath}`);
@@ -170,7 +141,7 @@ function parseServerDefinitionFile(fileStream) {
     return JSON.parse(fileStream);
   } catch (e) {
     throw Error(
-      "Something went wrong while parsing the input file. Is your file a JSON file?"
+      'Something went wrong while parsing the input file. Is your file a JSON file?'
     );
   }
 }
