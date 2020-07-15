@@ -9,43 +9,68 @@ const morgan = require("morgan");
 let app = Express();
 let server;
 
-function createDefinitionFromFile({ inputFile }) {
-  const filePath = getTruePath(inputFile);
-  if (!checkIfFileExists(filePath)) {
-    throw new Error("The server definition file does not exist");
-  }
-  return parseServerDefinitionFile(loadFile(filePath));
-}
-
-function createDefinitionFromArguments({
-  routePath,
-  port,
-  method,
-  fixture: unparsedFixture,
-  headers: unparsedHeaders,
-  statusCode,
-}) {
-  let fixture;
-  if (typeof unparsedFixture === "object") {
-    fixture = unparsedFixture;
-  } else if (isValidJson(unparsedFixture)) {
-    fixture = JSON.parse(unparsedFixture);
-  } else if (!unparsedFixture) {
+function createFixture(fixture, handleLoadFixture) {
+  if (typeof fixture === "object") {
+    return fixture;
+  } else if (isValidJson(fixture)) {
+    return JSON.parse(fixture);
+  } else if (!fixture) {
+    return undefined;
+  } else if (typeof fixture === "string") {
+    return handleLoadFixture(fixture);
   } else {
     throw new Error("fixture must be a stringified JSON object or undefined");
   }
-  let headers;
-  if (typeof unparsedHeaders === "object") {
-    headers = unparsedHeaders;
-  } else if (isValidJson(unparsedHeaders)) {
-    headers = JSON.parse(unparsedHeaders);
-  } else if (!unparsedHeaders) {
+}
+
+function createHeaders(headers) {
+  if (typeof headers === "object") {
+    return headers;
+  } else if (isValidJson(headers)) {
+    return JSON.parse(headers);
+  } else if (!headers) {
+    return undefined;
   } else {
     throw new Error("headers must be a stringified JSON object or undefined");
   }
+}
+function createDefinitionFromFile({ inputFile }, handleLoadFixture) {
+  const filePath = getTruePath(inputFile);
+  console.log("fffff", handleLoadFixture);
+  if (!checkIfFileExists(filePath)) {
+    throw new Error("The server definition file does not exist");
+  }
+  const parsedDefinition = parseServerDefinitionFile(loadFile(filePath));
+  return {
+    port: parsedDefinition.port || 3000,
+    routes: (parsedDefinition && parsedDefinition.routes
+      ? parsedDefinition.routes
+      : []
+    ).map((route) => {
+      return {
+        ...route,
+        fixture: createFixture(route.fixture, handleLoadFixture),
+      };
+    }),
+  };
+}
+function createDefinitionFromArguments(
+  {
+    routePath,
+    port,
+    method,
+    fixture: unparsedFixture,
+    headers: unparsedHeaders,
+    statusCode,
+  },
+  handleLoadFixture
+) {
+  const fixture = createFixture(unparsedFixture, handleLoadFixture);
+
+  const headers = createHeaders(unparsedHeaders);
 
   return {
-    port,
+    port: port || 3000,
     routes: [
       {
         path: routePath,
@@ -61,44 +86,48 @@ function createDefinitionFromArguments({
   };
 }
 
-export function createDefinition({
-  inputFile,
-  routePath,
-  method,
-  fixture,
-  port,
-  headers,
-  statusCode,
-}) {
+export function createDefinition(
+  { inputFile, routePath, method, fixture, port, headers, statusCode },
+  handleLoadFixture
+) {
   let serverDefinition;
   if (!!routePath) {
-    serverDefinition = createDefinitionFromArguments({
-      routePath,
-      method,
-      fixture,
-      headers,
-      port,
-      statusCode,
-    });
+    serverDefinition = createDefinitionFromArguments(
+      {
+        routePath,
+        method,
+        fixture,
+        headers,
+        port,
+        statusCode,
+      },
+      handleLoadFixture
+    );
   } else if (!!inputFile) {
-    serverDefinition = createDefinitionFromFile({ inputFile });
+    serverDefinition = createDefinitionFromFile(
+      { inputFile },
+      handleLoadFixture
+    );
   } else {
     throw Error("Either route path or input file must be specified");
   }
 
   return serverDefinition;
 }
-
+export function getReferenceFilePath(inputFile) {
+  return !!inputFile ? getTruePath(inputFile) : process.cwd();
+}
 export function runServer(serverOptions) {
-  const serverDefinition = createDefinition(serverOptions);
+  const serverDefinition = createDefinition(
+    serverOptions,
+    onLoadFixture(getReferenceFilePath(serverOptions.inputFile))
+  );
   app.use(morgan("combined"));
   app.use(cors());
-  const { port: schemaPort = 3000, routes = {} } = serverDefinition;
-  const filePath = !!serverOptions.inputFile
-    ? getTruePath(serverOptions.inputFile)
-    : process.cwd();
+  const { port: schemaPort, routes } = serverDefinition;
+
   for (let route of routes) {
-    app = addRouteToApp(app, route, loadFixture(filePath));
+    app = addRouteToApp(app, route);
   }
   console.info(chalk.green(`🚀 Server is listening on port ${schemaPort}`));
   server = app.listen(schemaPort);
@@ -119,7 +148,7 @@ function getFixturePath(fixturePath, serverDefinitionPath) {
   }
 }
 
-function loadFixture(serverDefinitionPath) {
+export function onLoadFixture(serverDefinitionPath) {
   return function (fixturePath) {
     const truePath = getFixturePath(fixturePath, serverDefinitionPath);
     if (checkIfFileExists(truePath)) {

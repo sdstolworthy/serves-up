@@ -3,6 +3,8 @@ const {
   createDefinition,
   runServer,
   close: closeServer,
+  onLoadFixture,
+  getReferenceFilePath,
 } = require("../src/server_definition");
 const { expect } = chai;
 const chaihttp = require("chai-http");
@@ -12,16 +14,19 @@ describe("Server definition factory", () => {
     closeServer();
   });
   it("should generate a schema from file when an inputFile is provided", () => {
-    let definition = createDefinition({
-      inputFile: "./tests/test_schema.json",
-    });
+    let definition = createDefinition(
+      {
+        inputFile: "./tests/test_schema.json",
+      },
+      onLoadFixture(getReferenceFilePath("./tests/test_schema.json"))
+    );
     expect(definition).to.deep.equal({
       port: 3000,
       routes: [
         {
           path: "/app",
           statusCode: 401,
-          fixture: "./test_fixture.json",
+          fixture: { example: "response" },
           methods: ["get", "post"],
         },
         {
@@ -33,6 +38,7 @@ describe("Server definition factory", () => {
         {
           path: "*",
           statusCode: 301,
+          fixture: undefined,
           headers: {
             "X-My-Custom-Header": "custom header",
           },
@@ -73,7 +79,7 @@ describe("Server definition factory", () => {
       fixture: '{ "hello": "world" }',
     });
     expect(definition).to.deep.equal({
-      port: undefined,
+      port: 3000,
       routes: [
         {
           path: "/app/test",
@@ -86,13 +92,16 @@ describe("Server definition factory", () => {
     });
   });
 
-  it("should throw an error when fixtures are not a map of strings", () => {
+  it("should throw an error when fixtures are not valid JSON, undefined, or json file", () => {
     expect(() =>
-      createDefinition({
-        routePath: "/app/test",
-        fixture: "garbledygook",
-      })
-    ).to.throw("fixture must be a stringified JSON object or undefined");
+      createDefinition(
+        {
+          routePath: "/app/test",
+          fixture: "garbledygook",
+        },
+        onLoadFixture(getReferenceFilePath())
+      )
+    ).to.throw("Fixture does not exist at path garbledygook");
   });
   it("should correctly parse stringified json headers", () => {
     let definition = createDefinition({
@@ -100,7 +109,7 @@ describe("Server definition factory", () => {
       headers: '{ "X-Custom-Header": "custom header" }',
     });
     expect(definition).to.deep.equal({
-      port: undefined,
+      port: 3000,
       routes: [
         {
           path: "/app/test",

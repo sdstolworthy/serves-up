@@ -1,5 +1,5 @@
-export function addRouteToApp(app, route, handleFixtureLoad) {
-  const requestHandler = createRequestHandler(route, { handleFixtureLoad });
+export function addRouteToApp(app, route) {
+  const requestHandler = createRequestHandler(route);
   if (!("path" in route)) {
     throw Error("`path` is a required key in every route");
   }
@@ -24,7 +24,7 @@ export function addRouteToApp(app, route, handleFixtureLoad) {
   return app;
 }
 
-function createRequestHandler(route, { handleFixtureLoad }) {
+function createRequestHandler(route) {
   if (route.statusCode && typeof route.statusCode !== "number") {
     throw Error(`Status code must be a number: ${route.path}`);
   }
@@ -33,18 +33,8 @@ function createRequestHandler(route, { handleFixtureLoad }) {
     response
       .set(responseHeaders)
       .status(typeof route.statusCode === "number" ? route.statusCode : 200)
-      .json(createFixture(route.fixture, handleFixtureLoad));
+      .json(route.fixture);
   };
-}
-
-function createFixture(fixture, handleFixtureLoad) {
-  if (typeof fixture === "object") {
-    return fixture;
-  } else if (typeof fixture === "string") {
-    return handleFixtureLoad(fixture);
-  } else {
-    return {};
-  }
 }
 
 function validateHttpMethod(method) {
