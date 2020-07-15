@@ -17,7 +17,7 @@ export function parseArguments() {
         demandOption: true,
       })
     )
-    .command("route", "Run a single route", (yargs) =>
+    .command("route <routePath>", "Run a single route", (yargs) =>
       yargs
         .positional("routePath", {
           type: "string",
