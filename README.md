@@ -1,27 +1,38 @@
 ![Test Status](https://github.com/sdstolworthy/serves-up/workflows/Test/badge.svg)
+
 [![Coverage Status](https://coveralls.io/repos/github/sdstolworthy/serves-up/badge.svg?branch=master)](https://coveralls.io/github/sdstolworthy/serves-up?branch=master)
 
 # 🏄🏼‍♂️ Serves Up 🏄🏿‍♂️
 
-Serves Up is a simple application for quickly mocking an API by parsing a simple JSON file and responding to requests on a specified port. ⛱️
+Serves Up is a simple application for quickly mocking an API with a simple JSON file.
+
+## About
+
+Serves Up is intended to solve common pain points in development in testing. For example, a mobile application developer or frontend developer may want to quickly mock status codes that are cumbersome to emulate otherwise.
+Additionally, Serves Up can be useful as a network log when a network inspector is unavailable.
+
+In testing, Serves Up can be used to stub APIs for integration tests where using the real API is not necessary or not practical.
+Additionally, Serves Up can be used in testing to ensure correct handling of common status codes.
+
+Serves Up uses [Express](https://expressjs.com/) under the hood to create the server. 
 
 ## Usage 🦈
 
 Serves Up requires the server definition to be passed in as the first positional argument to the command. For example:
 
-```bash
+``` bash
 npx serves-up ./my-server-definition.json
 ```
 
 Optionally, you can pass a port parameter that will override the port defined in the server definition:
 
-```bash
+``` bash
 npx serves-up ./my-server-definition.json -p 3001
 ```
 
 Alternatively, you can forego writing a schema definition file altogether and instead use the `route` command to build a one-liner to listen to a single route:
 
-```bash
+``` bash
 npx serves-up route  "/*" --statusCode 200 --method get --method post --fixture '{"hello":"world"}' --headers '{"X-Custom-Header":"custom header"}'
 ```
 
@@ -31,7 +42,7 @@ The server definition file is a simple JSON file that defines the server's confi
 
 A minimal server config would look like this:
 
-```json
+``` json
 {
   "port": 3000,
   "routes": [
@@ -42,9 +53,9 @@ A minimal server config would look like this:
 }
 ```
 
-_Note that `port` is an optional field. It defaults to `3000`_
+_Note that `port` is an optional field. It defaults to `3000` _
 
-This would return a `200` response on all routes with an empty json object: `{}`.
+This would return a `200` response on all routes with an empty json object: `{}` .
 
 ### Customizing Routes 🏝️
 
@@ -54,7 +65,7 @@ For example, a server definition could have the same path specified multiple tim
 
 The following server config has two route definitions for the same path, and a wildcard definition for all other paths.
 
-```json
+``` json
 {
   "port": 3000,
   "routes": [
@@ -82,7 +93,7 @@ Route responses can be customized with fixtures. Fixtures can be inline JSON obj
 
 Let's add fixtures to the route definition specified above.
 
-```json
+``` json
 {
   "port": 3000,
   "routes": [
@@ -112,7 +123,7 @@ You can add headers to a response by specifying the headers key in the route def
 
 For example, the above definition with a custom header for the wildcard route would look like this:
 
-```json
+``` json
 {
   "port": 3000,
   "routes": [
@@ -143,12 +154,21 @@ For example, the above definition with a custom header for the wildcard route wo
 
 If you're into one-liners, we've got you covered. You can run a single route definition with a single line command:
 
-```bash
+``` bash
 npx serves-up route  "/*" --statusCode 200 --method get --method post --fixture '{"hello":"world"}' --headers '{"X-Custom-Header":"custom header"}' --port 3001
 ```
 
 or, if typing words isn't your thing:
 
-```bash
+``` bash
 npx serves-up route  "/*" -c 200 -m get -m post -f '{"hello":"world"}' -d '{"X-Custom-Header":"custom header"}' -p 3001
 ```
+
+## Development ⛱️
+
+Clone the repository and run `npm install` .
+ESLint is used to ensure code conformity. In order to lint your code, run `npm run lint` .
+All Pull Requests must have complete code coverage. Run `npm run test` to see code coverage reports.
+
+Rollup is used to transpile the code. Run `npm run build` in order to build the project. The code will be output to `dist/servesup.js` .
+Once the code has been built, it can be installed with `npm install -g .` (note the period) , and subsequently run with `serves-up` .
