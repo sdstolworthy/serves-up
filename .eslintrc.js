@@ -1,9 +1,12 @@
 module.exports = {
+  'plugins': ['chai-expect', 'mocha'],
   'env': {
     'browser': true,
-    'es2020': true
+    'es2020': true,
+    'mocha': true,
+    'node':true,
   },
-  'extends': 'eslint:recommended',
+  'extends': ['eslint:recommended', 'plugin:chai-expect/recommended', 'plugin:mocha/recommended'],
   'parserOptions': {
     'ecmaVersion': 11,
     'sourceType': 'module'
