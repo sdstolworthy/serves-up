@@ -121,21 +121,17 @@ function getFixturePath(fixturePath, serverDefinitionPath) {
 
 function loadFixture(serverDefinitionPath) {
   return function (fixturePath) {
-    try {
-      const truePath = getFixturePath(fixturePath, serverDefinitionPath);
-      if (checkIfFileExists(truePath)) {
-        const fixtureBuffer = loadFile(truePath);
-        try {
-          return JSON.parse(fixtureBuffer);
-        } catch (e) {
-          throw Error("Fixture could not be parsed to JSON");
-        }
-      } else {
-        throw Error(`Fixture does not exist at path ${fixturePath}`);
+    console.log("lading fixture!!!");
+    const truePath = getFixturePath(fixturePath, serverDefinitionPath);
+    if (checkIfFileExists(truePath)) {
+      const fixtureBuffer = loadFile(truePath);
+      try {
+        return JSON.parse(fixtureBuffer);
+      } catch (e) {
+        throw Error("Fixture could not be parsed to JSON");
       }
-    } catch (e) {
-      console.error(e);
-      throw Error(`There was an error while loading a fixture: ${fixturePath}`);
+    } else {
+      throw Error(`Fixture does not exist at path ${fixturePath}`);
     }
   };
 }

@@ -6,18 +6,18 @@ export function parseArguments() {
     method,
     fixture,
     statusCode,
-    definition_file,
     port,
     headers,
+    definition_file,
   } = yargs
-    .command("$0 <definition_file> [options]", "", (yargs) =>
+    .command("$0 <definition_file>", "Run a schema file", (yargs) =>
       yargs.positional("definition_file", {
         describe: "schema definition file",
         type: "string",
         demandOption: true,
       })
     )
-    .command("$0 route <routePath> [options]", "route", (yargs) =>
+    .command("route", "Run a single route", (yargs) =>
       yargs
         .positional("routePath", {
           type: "string",
@@ -49,6 +49,7 @@ export function parseArguments() {
         .help("h")
     )
     .option("port", {
+      global: true,
       alias: "p",
       description:
         "The port the server will listen on (this overrides the server port defined in the schema)",
