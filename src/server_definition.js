@@ -37,7 +37,6 @@ function createHeaders(headers) {
 
 function createDefinitionFromFile({ inputFile }, handleLoadFixture) {
   const filePath = getTruePath(inputFile);
-  console.log("fffff", handleLoadFixture);
   if (!checkIfFileExists(filePath)) {
     throw new Error("The server definition file does not exist");
   }
