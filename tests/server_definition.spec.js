@@ -4,10 +4,9 @@ import {
   onLoadFixture,
   getReferenceFilePath,
 } from '../src/server_definition';
-import {close as closeServer} from '../src/server';
+import { close as closeServer } from '../src/server';
 import fs from 'fs';
 const { expect } = chai;
-
 
 describe('Server definition factory', function() {
   before(function() {
@@ -228,7 +227,7 @@ describe('Server definition factory', function() {
     fs.writeFileSync('./no-port.json', JSON.stringify({
       routes: []
     }));
-    expect(createDefinition({inputFile: './no-port.json'}, () => {})).to.deep.equal({
+    expect(createDefinition({ inputFile: './no-port.json' }, () => {})).to.deep.equal({
       'port': 3000,
       'routes': []
     });
@@ -237,7 +236,7 @@ describe('Server definition factory', function() {
   it('defaults to an empty array of routes when no route is defined', function() {
     fs.writeFileSync('./no-routes.json', JSON.stringify({
     }));
-    expect(createDefinition({inputFile: './no-routes.json'}, () => {})).to.deep.equal({
+    expect(createDefinition({ inputFile: './no-routes.json' }, () => {})).to.deep.equal({
       'port': 3000,
       'routes': []
     });
@@ -245,11 +244,11 @@ describe('Server definition factory', function() {
   });
   it('when a route is defined without a return statusCode, it defaults to `200`', function() {
     fs.writeFileSync('./no-return-status-code.json', JSON.stringify({
-      routes: [{path: '/*'}]
+      routes: [{ path: '/*' }]
     }));
-    expect(createDefinition({inputFile: './no-return-status-code.json'}, () => {})).to.deep.equal({
+    expect(createDefinition({ inputFile: './no-return-status-code.json' }, () => {})).to.deep.equal({
       'port': 3000,
-      'routes': [{path: '/*', statusCode: 200, fixture: undefined}],
+      'routes': [{ path: '/*', statusCode: 200, fixture: undefined }],
     });
     fs.unlinkSync('./no-return-status-code.json');
   });

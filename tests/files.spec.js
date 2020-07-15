@@ -1,7 +1,7 @@
 import * as files from '../src/files';
 import fs from 'fs';
 import path from 'path';
-import {expect} from 'chai';
+import { expect } from 'chai';
 import process from 'process';
 
 const TEST_FILE_PATH = './__test_file';

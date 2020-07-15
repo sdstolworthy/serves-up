@@ -1,6 +1,6 @@
 
 import chai from 'chai';
-import {runServer, close} from '../src/server';
+import { runServer, close } from '../src/server';
 import chaihttp from 'chai-http';
 import fs from 'fs';
 

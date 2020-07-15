@@ -1,7 +1,7 @@
 import Express from 'express';
 import chalk from 'chalk';
 import { addRouteToApp } from './route';
-import {createDefinition, onLoadFixture, getReferenceFilePath} from './server_definition';
+import { createDefinition, onLoadFixture, getReferenceFilePath } from './server_definition';
 import cors from 'cors';
 import morgan from 'morgan';
 

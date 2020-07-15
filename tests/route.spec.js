@@ -1,5 +1,5 @@
 import express from 'express';
-import {addRouteToApp} from '../src/route';
+import { addRouteToApp } from '../src/route';
 import { expect } from 'chai';
 describe('Route tests:', function() {
   it('should throw an error when adding a route to the server that does not have a path', function() {

@@ -8,9 +8,10 @@
     "url": "https://github.com/sdstolworthy/serves-up"
   },
   "scripts": {
+    "lint": "eslint src/**/*.js",
     "build": "rollup -c rollup.config.js",
     "prepare": "npm run build",
-    "test": "nyc --reporter=lcov --reporter=text --reporter=html mocha tests/**/*.spec.js --exit"
+    "test": "npm run lint && nyc --reporter=lcov --reporter=text --reporter=html mocha tests/**/*.spec.js --exit"
   },
   "homepage": "https://github.com/sdstolworthy/serves-up",
   "author": "Spencer Stolworthy",

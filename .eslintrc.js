@@ -12,6 +12,7 @@ module.exports = {
     'sourceType': 'module'
   },
   'rules': {
+    'object-curly-spacing': ['error', 'always'],
     'indent': [
       'error',
       2
