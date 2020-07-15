@@ -11,6 +11,45 @@ const { expect } = chai;
 const chaihttp = require("chai-http");
 chai.use(chaihttp);
 describe("Server definition factory", () => {
+  before(() => {
+    fs.writeFileSync(
+      "./tests/test_schema.json",
+      JSON.stringify({
+        port: 3000,
+        routes: [
+          {
+            path: "/app",
+            statusCode: 401,
+            fixture: "./test_fixture.json",
+            methods: ["get", "post"],
+          },
+          {
+            path: "/app",
+            statusCode: 200,
+            fixture: { john: "doe" },
+            methods: ["delete", "head"],
+          },
+          {
+            path: "*",
+            statusCode: 301,
+            headers: {
+              "X-My-Custom-Header": "custom header",
+            },
+          },
+        ],
+      })
+    );
+    fs.writeFileSync(
+      "./tests/test_fixture.json",
+      JSON.stringify({
+        example: "response",
+      })
+    );
+  });
+  after(() => {
+    fs.unlinkSync("./tests/test_schema.json");
+    fs.unlinkSync("./tests/test_fixture.json");
+  });
   afterEach(() => {
     closeServer();
   });
