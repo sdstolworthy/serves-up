@@ -4,12 +4,10 @@ import {
   onLoadFixture,
   getReferenceFilePath,
 } from '../src/server_definition';
-import {close as closeServer, runServer} from '../src/server';
+import {close as closeServer} from '../src/server';
 import fs from 'fs';
-import chaihttp from 'chai-http';
-
 const { expect } = chai;
-chai.use(chaihttp);
+
 
 describe('Server definition factory', function() {
   before(function() {
@@ -175,24 +173,8 @@ describe('Server definition factory', function() {
       createDefinition({});
     }).to.throw('Either route path or input file must be specified');
   });
-  it('should run a server if a valid definition has been specified', function(done) {
-    chai
-      .request(runServer({ routePath: '/' }))
-      .get('/')
-      .end((err, res) => {
-        expect(res).to.have.status(200);
-        done();
-      });
-  });
-  it('should load the correct fixture path', function(done) {
-    expect(() =>
-      chai
-        .request(runServer({ inputFile: './tests/test_schema.json' }))
-        .get('/')
-        .end()
-    ).to.not.throw();
-    done();
-  });
+ 
+
   it('should throw an error when the input file is not a valid json file', function() {
     fs.writeFileSync('./tests/incorrect_schema.json', 'ashwshahsisis');
     expect(() =>
@@ -241,5 +223,34 @@ describe('Server definition factory', function() {
       )
     ).to.throw('Fixture could not be parsed to JSON');
     fs.unlinkSync('./tests/sample.json');
+  });
+  it('defaults to port 3000 when no port is specified', function() {
+    fs.writeFileSync('./no-port.json', JSON.stringify({
+      routes: []
+    }));
+    expect(createDefinition({inputFile: './no-port.json'}, () => {})).to.deep.equal({
+      'port': 3000,
+      'routes': []
+    });
+    fs.unlinkSync('./no-port.json');
+  });
+  it('defaults to an empty array of routes when no route is defined', function() {
+    fs.writeFileSync('./no-routes.json', JSON.stringify({
+    }));
+    expect(createDefinition({inputFile: './no-routes.json'}, () => {})).to.deep.equal({
+      'port': 3000,
+      'routes': []
+    });
+    fs.unlinkSync('./no-routes.json');
+  });
+  it('when a route is defined without a return statusCode, it defaults to `200`', function() {
+    fs.writeFileSync('./no-return-status-code.json', JSON.stringify({
+      routes: [{path: '/*'}]
+    }));
+    expect(createDefinition({inputFile: './no-return-status-code.json'}, () => {})).to.deep.equal({
+      'port': 3000,
+      'routes': [{path: '/*', statusCode: 200, fixture: undefined}],
+    });
+    fs.unlinkSync('./no-return-status-code.json');
   });
 });
