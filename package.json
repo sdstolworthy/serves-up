@@ -1,6 +1,6 @@
 {
   "name": "serves-up",
-  "version": "1.5.4",
+  "version": "1.5.5",
   "description": "A simple JSON-defined server for mocking API responses",
   "main": "index.js",
   "repository": {
