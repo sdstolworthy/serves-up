@@ -1,3 +1,5 @@
+![Test Status](https://github.com/sdstolworthy/serves-up/workflows/Test/badge.svg)
+
 # 🏄🏼‍♂️ Serves Up 🏄🏿‍♂️
 
 Serves Up is a simple application for quickly mocking an API by parsing a simple JSON file and responding to requests on a specified port. ⛱️
