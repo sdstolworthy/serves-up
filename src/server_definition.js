@@ -34,6 +34,7 @@ function createHeaders(headers) {
     throw new Error("headers must be a stringified JSON object or undefined");
   }
 }
+
 function createDefinitionFromFile({ inputFile }, handleLoadFixture) {
   const filePath = getTruePath(inputFile);
   console.log("fffff", handleLoadFixture);
@@ -49,6 +50,7 @@ function createDefinitionFromFile({ inputFile }, handleLoadFixture) {
     ).map((route) => {
       return {
         ...route,
+        statusCode: route.statusCode || 200,
         fixture: createFixture(route.fixture, handleLoadFixture),
       };
     }),
@@ -61,7 +63,7 @@ function createDefinitionFromArguments(
     method,
     fixture: unparsedFixture,
     headers: unparsedHeaders,
-    statusCode,
+    statusCode = 200,
   },
   handleLoadFixture
 ) {

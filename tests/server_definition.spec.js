@@ -6,6 +6,7 @@ const {
   onLoadFixture,
   getReferenceFilePath,
 } = require("../src/server_definition");
+import fs from "fs";
 const { expect } = chai;
 const chaihttp = require("chai-http");
 chai.use(chaihttp);
@@ -84,7 +85,7 @@ describe("Server definition factory", () => {
         {
           path: "/app/test",
           fixture: { hello: "world" },
-          statusCode: undefined,
+          statusCode: 200,
           methods: undefined,
           headers: undefined,
         },
@@ -114,7 +115,7 @@ describe("Server definition factory", () => {
         {
           path: "/app/test",
           headers: { "X-Custom-Header": "custom header" },
-          statusCode: undefined,
+          statusCode: 200,
           methods: undefined,
           fixture: undefined,
         },
@@ -153,10 +154,52 @@ describe("Server definition factory", () => {
     done();
   });
   it("should throw an error when the input file is not a valid json file", () => {
+    fs.writeFileSync("./tests/incorrect_schema.json", "ashwshahsisis");
     expect(() =>
       createDefinition({ inputFile: "./tests/incorrect_schema.json" })
     ).to.throw(
       "Something went wrong while parsing the input file. Is your file a JSON file?"
     );
+    fs.unlinkSync("./tests/incorrect_schema.json");
+  });
+  it("should throw an error when a fixture is not a json serializable object, file, or undefined", () => {
+    expect(() =>
+      createDefinition(
+        {
+          routePath: "/app/test",
+          fixture: () => {},
+        },
+        onLoadFixture(getReferenceFilePath())
+      )
+    ).to.throw("fixture must be a stringified JSON object or undefined");
+  });
+  it("should accept an absolute path with an absolute path is passed for fixture", () => {
+    fs.writeFileSync(
+      "./tests/sample.json",
+      JSON.stringify({ hello: "goodbye" })
+    );
+    expect(() =>
+      createDefinition(
+        {
+          routePath: "/app",
+          fixture: __dirname + "/sample.json",
+        },
+        onLoadFixture(getReferenceFilePath())
+      )
+    ).to.not.throw();
+    fs.unlinkSync("./tests/sample.json");
+  });
+  it("should throw an error when the json file is not parsable", () => {
+    fs.writeFileSync("./tests/sample.json", "{invalid:json}");
+    expect(() =>
+      createDefinition(
+        {
+          routePath: "/app",
+          fixture: __dirname + "/sample.json",
+        },
+        onLoadFixture(getReferenceFilePath())
+      )
+    ).to.throw("Fixture could not be parsed to JSON");
+    fs.unlinkSync("./tests/sample.json");
   });
 });

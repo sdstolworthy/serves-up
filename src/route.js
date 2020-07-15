@@ -18,6 +18,8 @@ export function addRouteToApp(app, route) {
       let cleanedMethod = method.toLowerCase().trim();
       if (validateHttpMethod(cleanedMethod)) {
         app[cleanedMethod](route.path, requestHandler);
+      } else {
+        throw new Error("methods must be valid HTTP verbs");
       }
     }
   }
@@ -26,14 +28,11 @@ export function addRouteToApp(app, route) {
 
 function createRequestHandler(route) {
   if (route.statusCode && typeof route.statusCode !== "number") {
-    throw Error(`Status code must be a number: ${route.path}`);
+    throw Error(`Status code must be a number, not ${route.statusCode}`);
   }
   const responseHeaders = !!route.headers ? route.headers : {};
   return (request, response) => {
-    response
-      .set(responseHeaders)
-      .status(typeof route.statusCode === "number" ? route.statusCode : 200)
-      .json(route.fixture);
+    response.set(responseHeaders).status(route.statusCode).json(route.fixture);
   };
 }
 
