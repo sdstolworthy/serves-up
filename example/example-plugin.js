@@ -4,8 +4,4 @@ function requestInterceptor(req, res, next) {
     next();
   }
 }
-function responseInterceptor(req,res,next) {
-  console.log('I am a response interceptor');
-  next();
-}
-module.exports = { requestInterceptor, responseInterceptor };
+module.exports = { requestInterceptor };

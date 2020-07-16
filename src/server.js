@@ -18,10 +18,9 @@ export function runServer(serverOptions) {
   const { port: schemaPort, routes } = serverDefinition;
 
   app.use(cors());
-  app.use((req,res,next) => {
-    getPluginMethodByMethodName('requestInterceptor').forEach(p => typeof p === 'function' && p(req,res,next));
+  app.use((req, res, next) => {
+    getPluginMethodByMethodName('requestInterceptor').forEach(p => typeof p === 'function' && p(req, res, next));
     next();
-    getPluginMethodByMethodName('responseInterceptor').forEach(p => typeof p === 'function' && p(req,res,next));
   });
   app.use(morgan('combined'));
 
