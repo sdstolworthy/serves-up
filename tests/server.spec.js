@@ -3,8 +3,9 @@ import chai from 'chai';
 import { runServer, close } from '../src/server';
 import chaihttp from 'chai-http';
 import fs from 'fs';
-
+import chaiSpies from 'chai-spies';
 const { expect } = chai;
+chai.use(chaiSpies);
 chai.use(chaihttp);
 describe('RunServer tests', function() {
   before(function() {
@@ -65,6 +66,32 @@ describe('RunServer tests', function() {
         .get('/')
         .end()
     ).to.not.throw();
+    done();
+  });
+  it('should call a request interceptor plugin', function(done) {
+    const requestInterceptor = chai.spy((_, __, next) => next());
+    chai
+      .request(runServer({ routePath: '/',plugins: [{
+        requestInterceptor
+      }] }))
+      .get('/')
+      .end(() => {
+
+        expect(requestInterceptor).to.have.been.called();
+      });
+    done();
+  });
+  it('should call a response interceptor plugin', function(done) {
+    const responseInterceptor = chai.spy((_, __, next) => next());
+    chai
+      .request(runServer({ routePath: '/',plugins: [{
+        responseInterceptor
+      }] }))
+      .get('/')
+      .end(() => {
+
+        expect(responseInterceptor).to.have.been.called();
+      });
     done();
   });
 });
