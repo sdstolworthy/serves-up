@@ -89,9 +89,9 @@ describe('RunServer tests', function() {
       }] }))
       .get('/')
       .end(() => {
-
         expect(responseInterceptor).to.have.been.called();
       });
     done();
   });
+
 });
