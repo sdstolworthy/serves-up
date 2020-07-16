@@ -29,6 +29,47 @@ function createHeaders(headers) {
   }
 }
 
+function resolvePluginPath(pluginPath) {
+  try {
+
+    let resolvedPath;
+    if (path.isAbsolute(pluginPath) || pluginPath.includes('./')) {
+      resolvedPath = path.join(process.cwd(),pluginPath);
+    }
+    else {
+      resolvedPath = require.resolve(pluginPath);
+    }
+    return resolvedPath;
+  } catch(e) {
+    console.error(e);
+    return null;
+  }
+
+}
+
+function requirePluginFromPath(pluginPath) {
+  try {
+    const resolvedPath = resolvePluginPath(pluginPath);
+    const loadedPlugin = require(require.resolve(resolvedPath));
+    loadedPlugin.__plugin_name = pluginPath;
+    return loadedPlugin;
+  }catch(e) {
+    console.error(e);
+    return null;
+  }
+}
+
+function createPlugin(registerablePlugin) {
+  let plugin;
+  if (typeof registerablePlugin === 'object') {
+    plugin = registerablePlugin;
+  } else {
+    plugin = requirePluginFromPath(registerablePlugin);
+  }
+
+  Plugins.registerGlobalPlugin(plugin);
+}
+
 function createDefinitionFromFile({ inputFile }, handleLoadFixture) {
   const filePath = getTruePath(inputFile);
   if (!checkIfFileExists(filePath)) {
@@ -37,7 +78,7 @@ function createDefinitionFromFile({ inputFile }, handleLoadFixture) {
   const parsedDefinition = parseServerDefinitionFile(loadFile(filePath));
   return {
     port: parsedDefinition.port || 3000,
-    plugins: (parsedDefinition.plugins || []).forEach(Plugins.registerGlobalPlugin),
+    plugins: (parsedDefinition.plugins || []).forEach(createPlugin),
     routes: (parsedDefinition && parsedDefinition.routes
       ? parsedDefinition.routes
       : []
@@ -63,7 +104,7 @@ function createDefinitionFromArguments(
   handleLoadFixture
 ) {
 
-  plugins.forEach(Plugins.registerGlobalPlugin);
+  plugins.forEach(createPlugin);
   
   const fixture = createFixture(unparsedFixture, handleLoadFixture);
 

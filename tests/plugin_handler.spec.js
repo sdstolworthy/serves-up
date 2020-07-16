@@ -4,6 +4,7 @@ import chai, { expect } from 'chai';
 import process from 'process';
 import { Plugins, makeMiddlewareFailproof } from '../src/plugin_handler';
 import chaiSpy from 'chai-spies';
+import { createDefinition } from '../src/server_definition';
 chai.use(chaiSpy);
 const PLUGIN_PATH = './__plugin.js';
 describe('Plugin Handler:', function() {
@@ -20,7 +21,7 @@ describe('Plugin Handler:', function() {
     delete require.cache[path.join(process.cwd(), PLUGIN_PATH)];
   });
   it('does not allow plugin paths that are not a string', function() {
-    Plugins.registerGlobalPlugin({});
+    createDefinition({ routePath: '/', plugins: [{}] });
     expect(Plugins.plugins).to.deep.equal([]);
   });
   it('rejects a plugin that has a member that is not a function', function() {
@@ -29,7 +30,7 @@ describe('Plugin Handler:', function() {
         requestInterceptor: 'asdf'
       }
     `);
-    Plugins.registerGlobalPlugin(PLUGIN_PATH);
+    createDefinition({ routePath: '/', plugins: [PLUGIN_PATH] });
     expect(Plugins.plugins).to.deep.equal([]);
   });
   it('by default, plugins is an empty array', function() {
@@ -44,11 +45,11 @@ describe('Plugin Handler:', function() {
       function requestInterceptor(){}
       module.exports={requestInterceptor};
     `);
-    Plugins.registerGlobalPlugin(PLUGIN_PATH);
+    createDefinition({ plugins: [PLUGIN_PATH], routePath: '/' });
     expect(Plugins.plugins.length).to.equal(1);
   });
   it('returns null if a plugin cannot be resolved', function() {
-    Plugins.registerGlobalPlugin('./ashwhsaslsls');
+    createDefinition({ plugins:['./ashwhsaslsls'], routePath: '/' });
     expect(Plugins.plugins).to.deep.equal([]);
   });
   it('can resolve an installed node module', function() {
@@ -62,16 +63,16 @@ describe('Plugin Handler:', function() {
         requestInterceptor: function() {}
       }
     };
-    Plugins.registerGlobalPlugin('mocha');
+    createDefinition({ plugins: ['mocha'], routePath: '/' });
     expect(Plugins.plugins.length).to.equal(0);
   });
   it('rejects a plugin that is has no recognized methods', function() {
     fs.writeFileSync(PLUGIN_PATH, 'module.exports = {unrecognized: function unrecognized() {}}');
-    Plugins.registerGlobalPlugin(PLUGIN_PATH);
+    createDefinition({ plugins:[PLUGIN_PATH], routePath: '/' });
     expect(Plugins.plugins).to.deep.equal([]);
   });
   it('cannot load a module that is not installed', function() {
-    Plugins.registerGlobalPlugin('fake-plugin');
+    createDefinition({ routePath:'/', plugins: ['fake-plugin'] });
     expect(Plugins.plugins).to.deep.equal([]);
   });
   it('will catch a middleware call that throws an error', function() {

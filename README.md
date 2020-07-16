@@ -164,6 +164,15 @@ or, if typing words isn't your thing:
 npx serves-up route  "/*" -c 200 -m get -m post -f '{"hello":"world"}' -d '{"X-Custom-Header":"custom header"}' -p 3001
 ```
 
+## Plugins 🐙 
+
+Serves Up is pluggable. Plugins are simply modules that export at least one of the following functions:
+
+* `requestInterceptor(request, response, next)`
+These functions comply with the [Express middleware](https://expressjs.com/en/guide/using-middleware.html) interface. 
+
+`requestInterceptors` are called before the request is responded to.
+
 ## Development ⛱️
 
 Clone the repository and run `npm install` .
