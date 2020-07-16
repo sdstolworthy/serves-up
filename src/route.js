@@ -32,7 +32,9 @@ function createRequestHandler(route) {
   }
   const responseHeaders = route.headers ? route.headers : {};
   return (request, response) => {
-    response.set(responseHeaders).status(route.statusCode).json(route.fixture);
+    if (!response.headersSent) {
+      return response.set(responseHeaders).status(route.statusCode).json(route.fixture);
+    }
   };
 }
 

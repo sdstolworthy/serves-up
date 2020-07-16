@@ -1,6 +1,7 @@
 import { loadFile, checkIfFileExists, getTruePath, isValidJson } from './files';
 import path from 'path';
 import process from 'process';
+import { Plugins } from './plugin_handler';
 
 function createFixture(fixture, handleLoadFixture) {
   if (typeof fixture === 'object') {
@@ -36,6 +37,7 @@ function createDefinitionFromFile({ inputFile }, handleLoadFixture) {
   const parsedDefinition = parseServerDefinitionFile(loadFile(filePath));
   return {
     port: parsedDefinition.port || 3000,
+    plugins: (parsedDefinition.plugins || []).forEach(Plugins.registerGlobalPlugin),
     routes: (parsedDefinition && parsedDefinition.routes
       ? parsedDefinition.routes
       : []
@@ -52,6 +54,7 @@ function createDefinitionFromArguments(
   {
     routePath,
     port,
+    plugins = [],
     method,
     fixture: unparsedFixture,
     headers: unparsedHeaders,
@@ -59,6 +62,9 @@ function createDefinitionFromArguments(
   },
   handleLoadFixture
 ) {
+
+  plugins.forEach(Plugins.registerGlobalPlugin);
+  
   const fixture = createFixture(unparsedFixture, handleLoadFixture);
 
   const headers = createHeaders(unparsedHeaders);
@@ -81,7 +87,7 @@ function createDefinitionFromArguments(
 }
 
 export function createDefinition(
-  { inputFile, routePath, method, fixture, port, headers, statusCode },
+  { inputFile, routePath, method, fixture, port, headers, statusCode, plugins },
   handleLoadFixture
 ) {
   let serverDefinition;
@@ -93,6 +99,7 @@ export function createDefinition(
         fixture,
         headers,
         port,
+        plugins,
         statusCode,
       },
       handleLoadFixture
