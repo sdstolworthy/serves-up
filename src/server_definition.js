@@ -207,6 +207,7 @@ export function createDefinition(
 
   return serverDefinition;
 }
+
 export function getReferenceFilePath(inputFile) {
   return inputFile ? getTruePath(inputFile) : process.cwd();
 }
