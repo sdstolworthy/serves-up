@@ -5,13 +5,21 @@
       "path": "/app",
       "statusCode": 401,
       "fixture": "./example-fixture.json",
-      "methods": ["get", "post"]
+      "methods": [
+        "get",
+        "post"
+      ]
     },
     {
       "path": "/app",
       "statusCode": 200,
-      "fixture": { "john": "doe" },
-      "methods": ["delete", "head"]
+      "fixture": {
+        "john": "doe"
+      },
+      "methods": [
+        "delete",
+        "head"
+      ]
     },
     {
       "path": "*",
@@ -20,5 +28,8 @@
         "X-My-Custom-Header": "custom header"
       }
     }
+  ],
+  "plugins": [
+    "./example/example-plugin.js"
   ]
 }
